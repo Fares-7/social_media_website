@@ -32,6 +32,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/tweets/{tweet}/edit', [TweetController::class, 'edit'])->name('tweets.edit');
     Route::put('/tweets/{tweet}', [TweetController::class, 'update'])->name('tweets.update');
     Route::delete('/tweets/{tweet}', [TweetController::class, 'destroy'])->name('tweets.destroy');
+    Route::post('/tweets/{tweet}/like', [TweetController::class, 'like'])->name('tweets.like');
+    Route::post('/tweets/{tweet}/comment', [TweetController::class, 'comment'])->name('tweets.comment');
+
 });
 
 require __DIR__.'/auth.php';

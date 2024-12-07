@@ -9,9 +9,13 @@ class TweetController extends Controller
 {
     public function index()
 {
-    $tweets = Tweet::with('user')->latest()->paginate(10); // جلب التغريدات مع المستخدمين المرتبطين بها
+    $tweets = Tweet::with(['user', 'likes', 'comments.user']) // جلب المستخدم، الإعجابات، والتعليقات مع المستخدمين
+        ->latest()
+        ->paginate(10); // عرض 10 تغريدات لكل صفحة
+
     return view('tweets.index', compact('tweets')); // إرسال البيانات إلى واجهة Blade
 }
+
 
 public function store(Request $request)
 {
@@ -54,6 +58,28 @@ public function destroy(Tweet $tweet)
     $tweet->delete();
 
     return redirect()->back()->with('success', 'تم حذف التغريدة بنجاح!');
+}
+
+public function like(Request $request, Tweet $tweet)
+{
+    $tweet->likes()->firstOrCreate(['user_id' => auth()->id()]);
+
+    return redirect()->back()->with('success', 'تم الإعجاب بالتغريدة!');
+}
+
+
+public function comment(Request $request, Tweet $tweet)
+{
+    $request->validate([
+        'content' => 'required|string|max:255',
+    ]);
+
+    $tweet->comments()->create([
+        'user_id' => auth()->id(),
+        'content' => $request->content,
+    ]);
+
+    return redirect()->back()->with('success', 'تم إضافة التعليق!');
 }
 
 
