@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class User extends Authenticatable
 {
@@ -21,6 +22,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'image',
     ];
 
     /**
@@ -47,4 +49,26 @@ class User extends Authenticatable
     return $this->hasMany(Tweet::class);
 }
 
+public function likes()
+{
+    return $this->hasMany(Like::class);
+}
+
+
+ // المستخدمين الذين يتابعهم هذا المستخدم
+ public function following(): BelongsToMany
+ {
+     return $this->belongsToMany(User::class, 'follows', 'follower_id', 'following_id');
+ }
+
+ // المستخدمون الذين يتابعون هذا المستخدم
+ public function followers(): BelongsToMany
+ {
+     return $this->belongsToMany(User::class, 'follows', 'following_id', 'follower_id');
+ }
+
+ public function isFollowing(User $user)
+{
+    return $this->following()->where('following_id', $user->id)->exists();
+}
 }

@@ -3,8 +3,9 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
+use App\Models\Tweet;
 
-class DatabaseSeeder extends Seeder
+class TweetSeeder extends Seeder
 {
     /**
      * تنفيذ عملية الـ Seeding.
@@ -13,9 +14,6 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
-        $this->call([
-            UserSeeder::class,
-            TweetSeeder::class,
-        ]);
+        Tweet::factory(30)->create(); // إنشاء 30 تغريدة وهمية
     }
 }

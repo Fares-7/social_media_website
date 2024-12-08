@@ -1,0 +1,81 @@
+:root {
+    --primary-color: #1DA1F2;
+    --secondary-color: #14171A;
+}
+
+body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+}
+
+.navbar {
+    box-shadow: 0 2px 4px rgba(0,0,0,.1);
+}
+
+.card {
+    border: none;
+    box-shadow: 0 2px 4px rgba(0,0,0,.05);
+    transition: transform 0.2s ease;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+}
+
+.btn-primary {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+.btn-primary:hover {
+    background-color: #1991DA;
+    border-color: #1991DA;
+}
+
+.tweet-card {
+    border-radius: 15px;
+}
+
+.user-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    color: white;
+}
+
+.comment-section {
+    background-color: #F8F9FA;
+    border-radius: 0 0 15px 15px;
+}
+
+.interaction-buttons button {
+    transition: all 0.2s ease;
+}
+
+.interaction-buttons button:hover {
+    transform: scale(1.05);
+}
+
+
+
+.user-avatar {
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: bold;
+}
+
+.card {
+    border: none;
+    box-shadow: 0 2px 4px rgba(0,0,0,.05);
+}
+
+.rounded-circle {
+    border: 3px solid #f8f9fa;
+    box-shadow: 0 2px 4px rgba(0,0,0,.1);
+}

@@ -20,7 +20,7 @@ class RegisteredUserController extends Controller
      */
     public function create(): View
     {
-        return view('auth.register');
+        return view('auth.new-register');
     }
 
     /**
@@ -34,12 +34,19 @@ class RegisteredUserController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
-        ]);
+        'image' => ['nullable', 'image', 'mimes:jpg,png,jpeg', 'max:1024'],  // max 1MB
+    ]);
 
+    // Handle image upload
+    $imagePath = null;
+    if ($request->hasFile('image')) {
+        $imagePath = $request->file('image')->store('profile-images', 'public');
+    }
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
+            'image' => $imagePath, // Store the image path in the database
         ]);
 
         event(new Registered($user));
@@ -48,6 +55,6 @@ class RegisteredUserController extends Controller
 
         // return redirect(RouteServiceProvider::HOME);
 
-        return redirect()->route('tweets.index');
+        return redirect()->route('home');
     }
 }

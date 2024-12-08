@@ -4,29 +4,37 @@ namespace App\Http\Controllers;
 
 use App\Models\Tweet;
 use Illuminate\Http\Request;
-
+use App\Models\User;
+use App\Models\Like;
+use App\Models\Comment;
 class TweetController extends Controller
 {
     public function index()
-{
-    $tweets = Tweet::with(['user', 'likes', 'comments.user']) // جلب المستخدم، الإعجابات، والتعليقات مع المستخدمين
-        ->latest()
-        ->paginate(10); // عرض 10 تغريدات لكل صفحة
+    {
+        $tweets = Tweet::with(['user', 'likes', 'comments.user'])
+            ->latest()
+            ->paginate(10);
+        
+        $users = User::where('id', '!=', auth()->id())->get();
+    
+        return view('home', compact('tweets', 'users'));
+    }
+    
 
-    return view('tweets.index', compact('tweets')); // إرسال البيانات إلى واجهة Blade
-}
-
-
-public function store(Request $request)
-{
-    $request->validate([
-        'text' => 'required|max:140', // التحقق من النص
-    ]);
-
-    auth()->user()->tweets()->create($request->only('text')); // إنشاء التغريدة للمستخدم الحالي
-
-    return redirect()->back()->with('success', 'تم نشر التغريدة بنجاح!');
-}
+    public function store(Request $request)
+    {
+        $request->validate([
+            'text' => 'required|max:140',
+        ]);
+    
+        $tweet = new Tweet();
+        $tweet->text = $request->text;
+        $tweet->user_id = auth()->id();
+        $tweet->save();
+    
+        return redirect()->back()->with('success', 'تم نشر التغريدة بنجاح!');
+    }
+    
 
 
 public function edit(Tweet $tweet)
@@ -40,32 +48,54 @@ public function edit(Tweet $tweet)
 
 public function update(Request $request, Tweet $tweet)
 {
+    if ($tweet->user_id !== auth()->id()) {
+        abort(403);
+    }
+
     $request->validate([
         'text' => 'required|max:140',
     ]);
 
     $tweet->update($request->only('text'));
 
-    return redirect()->route('tweets.index')->with('success', 'تم تعديل التغريدة بنجاح!');
+    return redirect()->route('home')->with('success', 'تم تعديل التغريدة بنجاح!');
 }
 
 public function destroy(Tweet $tweet)
 {
     if ($tweet->user_id !== auth()->id()) {
-        abort(403); // منع حذف التغريدات الخاصة بآخرين
+        abort(403);
     }
 
+    $tweet->likes()->delete(); // Delete associated likes
+    $tweet->comments()->delete(); // Delete associated comments
     $tweet->delete();
 
     return redirect()->back()->with('success', 'تم حذف التغريدة بنجاح!');
 }
 
+
 public function like(Request $request, Tweet $tweet)
 {
-    $tweet->likes()->firstOrCreate(['user_id' => auth()->id()]);
+    // Check if already liked
+    if ($tweet->likedBy(auth()->user())) {
+        return redirect()->back()->with('error', 'لقد قمت بالإعجاب بهذه التغريدة مسبقاً');
+    }
+
+    $tweet->likes()->create([
+        'user_id' => auth()->id()
+    ]);
 
     return redirect()->back()->with('success', 'تم الإعجاب بالتغريدة!');
 }
+
+public function unlike(Request $request, Tweet $tweet)
+{
+    $tweet->likes()->where('user_id', auth()->id())->delete();
+    
+    return redirect()->back()->with('success', 'تم إلغاء الإعجاب!');
+}
+
 
 
 public function comment(Request $request, Tweet $tweet)
@@ -74,13 +104,15 @@ public function comment(Request $request, Tweet $tweet)
         'content' => 'required|string|max:255',
     ]);
 
-    $tweet->comments()->create([
-        'user_id' => auth()->id(),
-        'content' => $request->content,
-    ]);
+    $comment = new Comment();
+    $comment->content = $request->content;
+    $comment->user_id = auth()->id();
+    $comment->tweet_id = $tweet->id;
+    $comment->save();
 
     return redirect()->back()->with('success', 'تم إضافة التعليق!');
 }
+
 
 
 }
