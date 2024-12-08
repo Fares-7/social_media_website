@@ -6,15 +6,14 @@ use Illuminate\Http\Request;
 
 class UserController extends Controller
 {
-    public function followers(User $user)
-    {
-        $followers = $user->followers; // استرجاع المتابعين
-        return view('users.followers', compact('followers'));
-    }
+public function show(User $user)
+{
+    $tweets = $user->tweets()->latest()->paginate(10);
+    $followersCount = $user->followers()->count();
+    $followingCount = $user->following()->count();
+    $postCount = $user->tweets()->count();
 
-    public function following(User $user)
-    {
-        $following = $user->followings; // استرجاع من يتم متابعتهم
-        return view('users.following', compact('following'));
-    }
+    return view('users.show', compact('user', 'tweets', 'followersCount', 'followingCount', 'postCount'));
+
+}
 }

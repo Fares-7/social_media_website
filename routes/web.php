@@ -26,8 +26,11 @@ Route::get('/dashboard', function () {
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+    Route::get('/users/{user}', [UserController::class, 'show'])->name('users.show');
+
 
     Route::get('/', [TweetController::class, 'index'])->name('home');    Route::post('/tweets', [TweetController::class, 'store'])->name('tweets.store');
     Route::get('/tweets/{tweet}/edit', [TweetController::class, 'edit'])->name('tweets.edit');
@@ -40,8 +43,8 @@ Route::middleware('auth')->group(function () {
     Route::post('/follow/{user}', [FollowController::class, 'store'])->name('follow');
     Route::delete('/unfollow/{user}', [FollowController::class, 'destroy'])->name('unfollow');
     
-    Route::get('/users/{user}/followers', [UserController::class, 'followers'])->name('users.followers');
-    Route::get('/users/{user}/following', [UserController::class, 'following'])->name('users.following');
+    // Route::get('/users/{user}/followers', [UserController::class, 'followers'])->name('users.followers');
+    // Route::get('/users/{user}/following', [UserController::class, 'following'])->name('users.following');
 
 });
 
