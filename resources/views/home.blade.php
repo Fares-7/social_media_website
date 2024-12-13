@@ -9,17 +9,23 @@
                     <div class="card-body">
                         <div class="text-center mb-3">
                             @if (auth()->user()->image)
-                                <img src="{{ Storage::url(auth()->user()->image) }}" alt="Profile Image"
-                                    class="rounded-circle mb-3" style="width: 100px; height: 100px; object-fit: cover;">
+                                <a href="{{ route('users.show', auth()->user()) }}">
+                                    <img src="{{ Storage::url(auth()->user()->image) }}" alt="Profile Image"
+                                        class="rounded-circle mb-3" style="width: 100px; height: 100px; object-fit: cover;">
+                                </a>
                             @else
-                                <div class="user-avatar bg-primary mx-auto mb-3"
-                                    style="width: 100px; height: 100px; font-size: 2.5rem;">
-                                    {{ substr(auth()->user()->name, 0, 1) }}
-                                </div>
+                                <a href="{{ route('users.show', auth()->user()) }}">
+                                    <div class="user-avatar bg-primary mx-auto mb-3"
+                                        style="width: 100px; height: 100px; font-size: 2.5rem;">
+                                        {{ substr(auth()->user()->name, 0, 1) }}
+                                    </div>
+                                </a>
                             @endif
+                            <a href="{{ route('users.show', auth()->user()) }}" class="text-decoration-none">
+                                <h5 class="card-title">{{ auth()->user()->name }}</h5>
 
-                            <h5 class="card-title">{{ auth()->user()->name }}</h5>
-                            <p class="text-muted">{{ '@' . auth()->user()->name }}</p>
+                                <p class="text-muted">{{ '@' . auth()->user()->name }}</p>
+                            </a>
                         </div>
 
                         <div class="d-flex justify-content-between mt-3">
@@ -176,12 +182,14 @@
                     <div class="card-body p-0">
                         @foreach ($users as $user)
                             <div class="d-flex justify-content-between align-items-center p-3 border-bottom">
-                                <div class="d-flex align-items-center">
-                                    <div class="user-avatar bg-secondary me-2">
-                                        {{ substr($user->name, 0, 1) }}
+                                <a href="{{ route('users.show', $user) }}" class="text-decoration-none text-dark">
+                                    <div class="d-flex align-items-center">
+                                        <div class="user-avatar bg-secondary me-2">
+                                            {{ substr($user->name, 0, 1) }}
+                                        </div>
+                                        <div>{{ $user->name }}</div>
                                     </div>
-                                    <div>{{ $user->name }}</div>
-                                </div>
+                                </a>
                                 <form
                                     action="{{ route(auth()->user()->isFollowing($user) ? 'unfollow' : 'follow', $user->id) }}"
                                     method="POST">
